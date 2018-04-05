@@ -31,7 +31,11 @@ template <typename VT> struct mask128_bitops
 		// compare if that is equal to itself
 		// there is an _mm_undefined_ps function but not all
 		// compilers have that, so emulate it here
-		vec_type tmp = tmp;
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+		vec_type tmp = _mm_setzero_si128();
+#else
+		vec_type tmp = _mm_undefined_si128();
+#endif
 		return _mm_cmpeq_epi8( tmp, tmp );
 	}
 
@@ -191,7 +195,11 @@ template <> struct mask128_bitops<float>
 		// compare if that is equal to itself
 		// there is an _mm_undefined_ps function but not all
 		// compilers have that, so emulate it here
-		__m128i tmp = tmp;
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+		__m128i_type tmp = _mm_setzero_si128();
+#else
+		__m128i tmp = _mm_undefined_si128();
+#endif
 		return _mm_castsi128_ps( _mm_cmpeq_epi8( tmp, tmp ) );
 	}
 

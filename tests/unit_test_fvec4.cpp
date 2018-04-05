@@ -887,7 +887,7 @@ add_exp_tests( unit_test &test )
 				float v[4] = { 0.0005F,-2.F,31.2F,123412.2F };
 				fvec4 tmp( v );
 				fvec4::int_vec_type tmpe;
-				float cval[4];
+				__attribute__((unused)) float cval[4];
 				int ival[4];
 				for ( int i = 0; i != 4; ++i )
 					cval[i] = ::frexpf( v[i], &ival[i] );

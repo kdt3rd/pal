@@ -200,7 +200,7 @@ struct match_test
 	{
 		bool ret = true;
 		for ( int i = 0; i != value_count; ++i )
-			ret = ret && ( ulpsDelta( _v[i], _s[i] ) <= ulps );
+			ret = ret && ( ulpsDelta( _v[i], _s[i] ) <= uint32_t(ulps) );
 		return ret;
 	}
 
@@ -287,7 +287,7 @@ inline void
 TEST_VAL_EQ_HEX( unit_test &test, const std::string &tag, T val, U exp )
 {
 	std::stringstream msg_buf;
-	if ( val == exp )
+	if ( val == T(exp) )
 	{
 		msg_buf << "0x"
 				<< std::setw(sizeof(T)*2)
