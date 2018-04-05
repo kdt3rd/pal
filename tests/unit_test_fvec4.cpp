@@ -66,6 +66,13 @@ add_class_tests( unit_test &test )
 							 tmp = 4.F;
 							 return match( tmp, {4.F,4.F,4.F,4.F} );
 						 } );
+		TEST_CODE_VAL_EQ(test, "assign_idx",
+						 []() {
+							 fvec4 tmp = fvec4::zero();
+							 tmp = 4.F;
+							 tmp.set<2>( 2.F );
+							 return match( tmp, {4.F,4.F,2.F,4.F} );
+						 } );
 		TEST_CODE_VAL_EQ(test, "add1_inplace",
 						 []() {
 							 fvec4 tmp( 1.F );

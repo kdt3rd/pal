@@ -73,12 +73,45 @@ public:
 	PAL_INLINE fvec4 &operator=( float v ) { _vec = _mm_set1_ps( v ); return *this; }
 	PAL_INLINE fvec4 &operator=( __m128 x ) { _vec = x; return *this; }
 
+	template <int i>
+	void set( float v )
+	{
+#ifdef PAL_ENABLE_SSE4_1
+		_vec = _mm_insert_ps( _vec, _mm_set1_ps(v), uint8_t(i<<4) );
+#else
+		_vec = _mm_set_ps( (i == 3) ? v : ((__v4sf)_vec)[3],
+						   (i == 2) ? v : ((__v4sf)_vec)[2],
+						   (i == 1) ? v : ((__v4sf)_vec)[1],
+						   (i == 0) ? v : ((__v4sf)_vec)[0] );
+#endif
+	}
+
+	template <int i>
+	float get() const
+	{
+#ifdef PAL_HAS_DIRECT_VEC_ACCESS
+		return ((__v4sf)_vec)[i];
+#elif defined(PAL_HAS_UNION_VEC_ACCESS)
+		union
+		{
+			__m128 vec;
+			float vals[4];
+		};
+		vec = _vec;
+		return vals[i];
+#else
+		PAL_ALIGN_128 float vals[4];
+		_mm_store_ps( vals, _vec );
+		return vals[i];
+#endif
+	}
+
 	PAL_INLINE float operator[]( int i ) const
 	{
 #ifdef PAL_HAS_DIRECT_VEC_ACCESS
 		return ((__v4sf)_vec)[i];
 #elif defined(PAL_HAS_UNION_VEC_ACCESS)
-		union 
+		union
 		{
 			__m128 vec;
 			float vals[4];
