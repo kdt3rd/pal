@@ -62,7 +62,8 @@
 
 // gcc, clang, icc should set one of these indicating we
 // are compiling for an x86-based platform
-#if defined(__x86_64__) || defined(__x86_64) || defined(__x86__)
+// but also allow for "x86 emulation", as provided by IBM under PPC
+#if defined(__x86_64__) || defined(__x86_64) || defined(__x86__) || defined(PAL_X86_EMULATION)
 
 // is ifdef this accurate, in that linux (gxx) has x86intrin.h but
 // under os/x, clang doesn't provide x86intrin.h. Does clang under
@@ -154,7 +155,7 @@
 # define PAL_ENABLE_SSE 1
 # define PAL_ENABLE_SSE2 1
 # define PAL_ENABLE_SSE3 1
-// what about the other sse levels / avx / extensions???
+// todo: what about the other sse levels / avx / extensions???
 
 #endif
 
