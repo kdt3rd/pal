@@ -29,7 +29,7 @@
 # define _PAL_COMMON_COMPILER_H_ 1
 
 #if defined(__GNUC__) || defined(__clang__)
-# define PAL_INLINE inline __attribute__((always_inline))
+# define PAL_INLINE inline __attribute__((always_inline, artificial))
 #else
 # if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 #  define PAL_INLINE __forceinline
