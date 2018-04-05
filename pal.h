@@ -8,6 +8,9 @@
 #ifndef _PAL_H_
 # define _PAL_H_ 1
 
+// done before anything in case we need to set up some O.S. level
+// defines for later includes, does not use anything in the pal
+// namespace, or set anything but defines...
 #include "common/compiler.h"
 #include <cmath>
 #include <cfloat>
@@ -23,7 +26,10 @@
 ///
 /// if some incompatible API change happens or for some reason there
 /// is a conflict with another package, change this.
-#define PAL_NAMESPACE pal
+namespace PAL_v1_0 {}
+namespace pal = PAL_v1_0;
+
+#define PAL_NAMESPACE PAL_v1_0
 
 #include "common/type_utils.h"
 
