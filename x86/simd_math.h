@@ -65,24 +65,19 @@ PAL_INLINE vec ifthen( mask m, vec t, vec f )
 /// NaN behavior? NaNs have a sign, but the man page says
 /// nothing other than nan is returned...
 template <typename vec>
-PAL_INLINE
-typename is_floating_point_vec<vec>::type
+PAL_INLINE PAL_ENABLE_ANY_FLOAT(vec)
 fabs( vec v )
 {
-	static_assert( std::is_floating_point<typename vec::value_type>::value, "fabs should be called with a float/double vector" );
 	typedef typename vec::int_vec_type ivec;
-	typedef typename vec::mask_type mvec;
 	typedef int_constants<ivec> constants;
 
 	return v & constants::nonsign_bitmask().as_float();
 }
 
 template <typename vec>
-PAL_INLINE
-typename is_float_vec<vec>::type
+PAL_INLINE PAL_ENABLE_FLOAT(vec)
 fabsf( vec v )
 {
-	static_assert( sizeof(typename vec::value_type) == 4, "fabsf should be called with float vectors" );
 	return fabs( v );
 }
 
@@ -98,8 +93,7 @@ PAL_INLINE vec abs( vec v )
 
 /// @brief implements standard c copysign function
 template <typename vec>
-PAL_INLINE
-typename is_floating_point_vec<vec>::type
+PAL_INLINE PAL_ENABLE_ANY_FLOAT(vec)
 copysign( vec a, vec b )
 {
 	typedef int_constants<vec> constants;
@@ -111,8 +105,7 @@ copysign( vec a, vec b )
 
 /// @brief implements standard c copysign function
 template <typename vec>
-PAL_INLINE
-typename is_float_vec<vec>::type
+PAL_INLINE PAL_ENABLE_FLOAT(vec)
 copysignf( vec a, vec b )
 {
 	return copysign( a, b );
@@ -124,8 +117,7 @@ copysignf( vec a, vec b )
 // anyway in that, like the C library, does NOT do "banker's rounding"
 // where it alternately rounds odds / evens up/down.
 template <typename vec>
-PAL_INLINE
-typename is_float_vec<vec>::type
+PAL_INLINE PAL_ENABLE_FLOAT(vec)
 roundf( vec a )
 {
 	// this takes 2 constants to compute, is there a better way?
@@ -143,8 +135,7 @@ PAL_INLINE vec square( vec a )
 
 /// @brief fmod
 template <typename vec>
-PAL_INLINE
-typename is_floating_point_vec<vec>::type
+PAL_INLINE PAL_ENABLE_ANY_FLOAT(vec)
 fmod( vec n, vec d )
 {
 	vec c = n / d;
@@ -154,8 +145,7 @@ fmod( vec n, vec d )
 
 /// @brief fmod
 template <typename vec>
-PAL_INLINE
-typename is_float_vec<vec>::type
+PAL_INLINE PAL_ENABLE_FLOAT(vec)
 fmodf( vec n, vec d )
 {
 	vec c = n / d;

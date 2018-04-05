@@ -258,7 +258,7 @@ PAL_INLINE fvec4 rsqrtf( fvec4 a )
 
 PAL_INLINE fvec4 truncf( fvec4 a )
 {
-#ifdef __SSE4_1__
+#ifdef PAL_ENABLE_SSE4_1
 	return _mm_round_ps( a, (_MM_FROUND_TO_ZERO | _MM_FROUND_NO_EXC ) );
 #else
 	return fvec4::convert_int( a.convert_to_int_trunc() );
@@ -268,7 +268,7 @@ PAL_INLINE fvec4 truncf( fvec4 a )
 // standard vectorized floor
 PAL_INLINE fvec4 floorf( fvec4 a )
 {
-#ifdef __SSE4_1__
+#ifdef PAL_ENABLE_SSE4_1
 	return _mm_floor_ps( a );
 #else
 	typedef fvec4::int_vec_type ivec;
@@ -282,7 +282,7 @@ PAL_INLINE fvec4 floorf( fvec4 a )
 // standard vectorized ceilf
 PAL_INLINE fvec4 ceilf( fvec4 a )
 {
-#ifdef __SSE4_1__
+#ifdef PAL_ENABLE_SSE4_1
 	return _mm_ceil_ps( a );
 #else
 	typedef fvec4::int_vec_type ivec;
@@ -299,13 +299,11 @@ PAL_INLINE fvec4 ceilf( fvec4 a )
 // so 3.5 == 4 but 4.5 == 4
 PAL_INLINE fvec4 rintf( fvec4 a )
 {
-#ifdef __SSE4_1__
+#ifdef PAL_ENABLE_SSE4_1
 	return _mm_round_ps( a, _MM_FROUND_CUR_DIRECTION );
 #else
 	typedef fvec4::int_vec_type ivec;
 	typedef vector_limits<fvec4> limits;
-	typedef float_extract_constants<fvec4> feconst;
-	typedef int_constants<ivec> iconst;
 
 	fvec4 remfrac = fvec4( 1.F / std::numeric_limits<float>::epsilon() );
 	ivec e = lsr( a.as_int(), limits::mantissa_bits ) & ivec( 0xFF );
@@ -324,7 +322,7 @@ PAL_INLINE fvec4 rintf( fvec4 a )
 // so 3.5 == 4 but 4.5 == 4
 PAL_INLINE fvec4 nearbyintf( fvec4 a )
 {
-#ifdef __SSE4_1__
+#ifdef PAL_ENABLE_SSE4_1
 	return _mm_round_ps( a, ( _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC ) );
 #else
 	return rintf( a );

@@ -22,13 +22,11 @@ namespace PAL_NAMESPACE
 /// This should match the output of the standard C library but do n
 /// values at once
 template <typename VT>
-PAL_INLINE
-typename is_floating_point_vec<VT>::type::int_vec_type
+PAL_INLINE PAL_ENABLE_ANY_FLOAT(VT)::int_vec_type
 ilogb( VT x )
 {
 	typedef VT fvec;
 	typedef typename fvec::int_vec_type ivec;
-	typedef float_constants<fvec> constants;
 	typedef float_extract_constants<fvec> extract;
 	typedef vector_limits<fvec> limits;
 	typedef vector_limits<ivec> ilimits;
@@ -43,8 +41,7 @@ ilogb( VT x )
 }
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type::int_vec_type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)::int_vec_type
 ilogbf( VT x )
 {
 	// through the magic of templating, these are the same and
@@ -59,8 +56,7 @@ ilogbf( VT x )
 /// This should match the output of the standard C library but do n
 /// values at once
 template <typename VT>
-PAL_INLINE
-typename is_floating_point_vec<VT>::type
+PAL_INLINE PAL_ENABLE_ANY_FLOAT(VT)
 ldexp( VT x, typename VT::int_vec_type e )
 {
 	typedef VT fvec;
@@ -69,7 +65,6 @@ ldexp( VT x, typename VT::int_vec_type e )
 	typedef float_constants<fvec> constants;
 	typedef float_extract_constants<fvec> extract;
 	typedef vector_limits<fvec> limits;
-	typedef vector_limits<ivec> ilimits;
 
 	mvec ebits( extract::exponent_mask().as_float() );
 	ivec cur_e = lsr( ( x.as_int() & ebits.as_int() ), limits::mantissa_bits );
@@ -93,8 +88,7 @@ ldexp( VT x, typename VT::int_vec_type e )
 }
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 ldexpf( VT x, typename VT::int_vec_type e )
 {
 	// through the magic of templating, these are the same and
@@ -111,17 +105,14 @@ ldexpf( VT x, typename VT::int_vec_type e )
 /// the exponent is required, and this eliminates null pointer
 /// checks, etc.
 template <typename VT>
-inline
-typename is_floating_point_vec<VT>::type
+inline PAL_ENABLE_ANY_FLOAT(VT)
 frexp( VT x, typename VT::int_vec_type &e )
 {
 	typedef VT fvec;
 	typedef typename VT::int_vec_type ivec;
 	typedef typename ivec::mask_type mvec;
-	typedef float_constants<fvec> constants;
 	typedef float_extract_constants<fvec> extract;
 	typedef vector_limits<fvec> limits;
-	typedef vector_limits<ivec> ilimits;
 
 	// get the exponent and subtract the bias
 	e = lsr( ( x.as_int() & extract::exponent_mask() ), limits::mantissa_bits );
@@ -141,8 +132,7 @@ frexp( VT x, typename VT::int_vec_type &e )
 }
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 frexpf( VT x, typename VT::int_vec_type &e )
 {
 	// through the magic of templating, these are the same and
@@ -154,8 +144,7 @@ frexpf( VT x, typename VT::int_vec_type &e )
 
 // TODO: force inline?
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 log2f( VT d )
 {
 	typedef VT fvec;
@@ -208,8 +197,7 @@ log2f( VT d )
 ////////////////////////////////////////
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 logf( VT d )
 {
 	typedef VT fvec;
@@ -257,8 +245,7 @@ logf( VT d )
 ////////////////////////////////////////
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 log10f( VT d )
 {
 	typedef VT fvec;
@@ -310,12 +297,10 @@ log10f( VT d )
 ////////////////////////////////////////
 
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 faster_log2f( VT d )
 {
 	typedef VT fvec;
-	typedef typename fvec::int_vec_type ivec;
 
 	fvec x = fvec::convert_int( d.as_int() );
 	x *= fvec( 1.F/(1<<23) );
@@ -328,8 +313,7 @@ faster_log2f( VT d )
 
 // TODO: force inline?
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 fast_log2f( VT d )
 {
 	typedef VT fvec;
@@ -341,7 +325,7 @@ fast_log2f( VT d )
 			 vector_limits<fvec>::mantissa_bits )
 		- vector_limits<fvec>::exponent_bias );
 
-	fvec m = ( d.as_int() & ivec( vector_limits<fvec>::mantissa_mask ) |
+	fvec m = ( ( d.as_int() & ivec( vector_limits<fvec>::mantissa_mask ) ) |
 			   ivec( vector_limits<fvec>::exponent_bias << vector_limits<fvec>::mantissa_bits ) ).as_float();
 	m -= float_constants<fvec>::one();
 
@@ -367,8 +351,7 @@ fast_log2f( VT d )
 ////////////////////////////////////////
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 fast_logf( VT f )
 {
 	return fast_log2f( f ) * float_constants<VT>::log_2();
@@ -377,8 +360,7 @@ fast_logf( VT f )
 ////////////////////////////////////////
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 fast_log10f( VT f )
 {
 	return fast_log2f( f ) * float_constants<VT>::log_2_10();
@@ -387,14 +369,12 @@ fast_log10f( VT f )
 ////////////////////////////////////////
 
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 expf( VT x0 )
 {
 	typedef VT fvec;
 	typedef typename VT::int_vec_type ivec;
 	typedef typename ivec::mask_type mvec;
-	typedef typename fvec::mask_type mfvec;
 	typedef float_constants<fvec> fconst;
 	typedef float_extract_constants<fvec> econst;
 	typedef vector_limits<fvec> limits;
@@ -453,8 +433,7 @@ expf( VT x0 )
 ////////////////////////////////////////
 
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 exp2f( VT x0 )
 {
 	typedef VT fvec;
@@ -494,15 +473,12 @@ exp2f( VT x0 )
 ////////////////////////////////////////
 
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 exp10f( VT x0 )
 {
 	typedef VT fvec;
 	typedef typename VT::int_vec_type ivec;
-	typedef typename VT::mask_type mvec;
 	typedef float_constants<fvec> fconst;
-	typedef int_constants<ivec> iconst;
 
 	const fvec P0( float(2.063216740311022E-001) );
 	const fvec P1( float(5.420251702225484E-001) );
@@ -539,15 +515,12 @@ exp10f( VT x0 )
 ////////////////////////////////////////
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 fast_expf( VT x0 )
 {
 	typedef VT fvec;
 	typedef typename VT::int_vec_type ivec;
-	typedef typename VT::mask_type mvec;
 	typedef float_constants<fvec> fconst;
-	typedef int_constants<ivec> iconst;
 
 	const fvec C1( float(0.693359375) );
 	const fvec C2( float(-2.12194440e-4) );
@@ -590,8 +563,7 @@ fast_expf( VT x0 )
 ////////////////////////////////////////
 
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 faster_exp2f( VT d )
 {
 	typedef VT fvec;
@@ -614,16 +586,14 @@ faster_exp2f( VT d )
 }
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 fast_exp2f( VT v )
 {
 	return fast_expf( v * float_constants<VT>::log_2() );
 }
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 fast_exp10f( VT v )
 {
 	return fast_expf( v * float_constants<VT>::log_10() );
@@ -632,8 +602,7 @@ fast_exp10f( VT v )
 ////////////////////////////////////////
 
 template <typename VT>
-inline
-typename is_floating_point_vec<VT>::type
+inline PAL_ENABLE_ANY_FLOAT(VT)
 pow( VT v, VT p )
 {
 	typedef VT vec;
@@ -670,8 +639,7 @@ pow( VT v, VT p )
 }
 
 template <typename VT>
-PAL_INLINE
-typename is_floating_point_vec<VT>::type
+PAL_INLINE PAL_ENABLE_ANY_FLOAT(VT)
 pow( VT v, typename VT::value_type p )
 {
 	// can we pre-test p for any of the conditions and
@@ -680,8 +648,7 @@ pow( VT v, typename VT::value_type p )
 }
 
 template <typename VT>
-inline
-typename is_floating_point_vec<VT>::type
+inline PAL_ENABLE_ANY_FLOAT(VT)
 pow( VT v, int p )
 {
 	switch ( p )
@@ -718,8 +685,7 @@ pow( VT v, int p )
 }
 
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 powf( VT v, VT p )
 {
 //	return pow( v, p );
@@ -804,8 +770,7 @@ powf( VT v, VT p )
 }
 
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 powf( VT v, float p )
 {
 	return powf( v, VT(p) );
@@ -813,8 +778,7 @@ powf( VT v, float p )
 
 /// @brief compute powf with an integer power
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 powf( VT v, int p )
 {
 	return pow( v, p );
@@ -824,8 +788,7 @@ powf( VT v, int p )
 
 /// @brief computes a rough approximation of powf for normal values
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 faster_powf( VT v, VT p )
 {
 	return faster_exp2f( p * faster_log2f( v ) );
@@ -833,8 +796,7 @@ faster_powf( VT v, VT p )
 
 /// @brief computes a rough approximation of powf for normal values
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 faster_powf( VT v, float p )
 {
 	return faster_exp2f( p * faster_log2f( v ) );
@@ -847,8 +809,7 @@ faster_powf( VT v, float p )
 /// This computes powf(x,y) as expf( y * logf(x) ) using logarithm
 /// identities
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 fast_powf( VT v, VT p )
 {
 	return fast_expf( p * fast_logf( v ) );
@@ -856,8 +817,7 @@ fast_powf( VT v, VT p )
 
 /// @brief compute fast_powf with the same power for all vector items
 template <typename VT>
-PAL_INLINE
-typename is_float_vec<VT>::type
+PAL_INLINE PAL_ENABLE_FLOAT(VT)
 fast_powf( VT v, float p )
 {
 	return fast_expf( VT::splat( p ) * fast_logf( v ) );
@@ -866,8 +826,7 @@ fast_powf( VT v, float p )
 ////////////////////////////////////////
 
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 cbrtf( VT v )
 {
 	typedef VT fvec;

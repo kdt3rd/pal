@@ -16,15 +16,13 @@ namespace PAL_NAMESPACE
 {
 
 template <typename VT>
-inline
-typename is_float_vec<VT>::type::int_vec_type
+inline PAL_ENABLE_FLOAT(VT)::int_vec_type
 reduce_pi_2( VT &x, VT &y, VT v )
 {
 }
 
 template <typename VT>
-inline
-typename is_float_vec<VT>::type
+inline PAL_ENABLE_FLOAT(VT)
 sinf( VT v )
 {
 	typedef VT fvec;
