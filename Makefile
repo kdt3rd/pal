@@ -10,6 +10,7 @@ DEPDIR := $(BLDDIR)/.d
 
 SRCS := test_math.cpp tests/unit_test_fvec4.cpp tests/unit_test_lvec4.cpp
 
+CFLAGS_ALL := -std=c++17 -Wall
 CFLAGS_sse2 := -msse2
 CFLAGS_sse3 := -msse3
 CFLAGS_sse4 := -msse4.1
@@ -23,7 +24,7 @@ define TARGRULE
 
 $(BLDDIR)/$(basename $(notdir $(1)))_$(2): $(1) | $(DEPDIR) $(BLDDIR)
 	echo "[CC $(2)] $$@"
-	g++ $(CFLAGS_$(2)) -MT $$@ -MMD -MP -MF $$(patsubst $(BLDDIR)%,$(DEPDIR)%,$$@.Td) --std=c++11 -I$(CURDIR) -o $$@ $(1)
+	g++ $(CFLAGS_ALL) $(CFLAGS_$(2)) -MT $$@ -MMD -MP -MF $$(patsubst $(BLDDIR)%,$(DEPDIR)%,$$@.Td) --std=c++11 -I$(CURDIR) -o $$@ $(1)
 	mv -f $$(patsubst $(BLDDIR)%,$(DEPDIR)%,$$@.Td) $$(patsubst $(BLDDIR)%,$(DEPDIR)%,$$@.d) && touch $$@
 
 endef
