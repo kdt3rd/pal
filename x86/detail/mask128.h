@@ -20,9 +20,9 @@ namespace detail
 
 template <typename VT> struct mask128_bitops
 {
-	typedef VT value_type;
+	using value_type = VT;
 	static_assert( std::is_integral<value_type>::value, "Expecting integer type" );
-	typedef __m128i vec_type;
+	using vec_type = __m128i;
 
 	static PAL_INLINE vec_type no( void ) { return _mm_setzero_si128(); }
 	static PAL_INLINE vec_type yes( void )
@@ -32,7 +32,7 @@ template <typename VT> struct mask128_bitops
 		// there is an _mm_undefined_ps function but not all
 		// compilers have that, so emulate it here
 #if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
-		vec_type tmp = _mm_setzero_si128();
+		vec_type tmp = _mm_setzero_si128(); // tmp;
 #else
 		vec_type tmp = _mm_undefined_si128();
 #endif
@@ -103,8 +103,8 @@ template <typename VT> struct mask128_bitops
 
 template <> struct mask128_bitops<double>
 {
-	typedef double value_type;
-	typedef __m128d vec_type;
+	using value_type = double;
+	using vec_type = __m128d;
 
 	static PAL_INLINE vec_type no( void ) { return _mm_setzero_pd(); }
 	static PAL_INLINE vec_type yes( void )
@@ -113,7 +113,11 @@ template <> struct mask128_bitops<double>
 		// compare if that is equal to itself
 		// there is an _mm_undefined_ps function but not all
 		// compilers have that, so emulate it here
-		__m128i tmp = tmp;
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+		__m128i tmp = _mm_setzero_si128(); // tmp;
+#else
+		__m128i tmp = _mm_undefined_si128();
+#endif
 		return _mm_castsi128_pd( _mm_cmpeq_epi8( tmp, tmp ) );
 	}
 
@@ -185,8 +189,8 @@ template <> struct mask128_bitops<double>
 
 template <> struct mask128_bitops<float>
 {
-	typedef float value_type;
-	typedef __m128 vec_type;
+	using value_type = float;
+	using vec_type = __m128;
 
 	static PAL_INLINE vec_type no( void ) { return _mm_setzero_ps(); }
 	static PAL_INLINE vec_type yes( void )
@@ -196,7 +200,7 @@ template <> struct mask128_bitops<float>
 		// there is an _mm_undefined_ps function but not all
 		// compilers have that, so emulate it here
 #if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
-		__m128i_type tmp = _mm_setzero_si128();
+		__m128i tmp = _mm_setzero_si128();
 #else
 		__m128i tmp = _mm_undefined_si128();
 #endif
@@ -277,8 +281,9 @@ template <size_t S, typename T> struct mask128_traits {};
 template <typename T> struct mask128_traits<1,T>
 {
 	static_assert( std::is_integral<T>::value, "Expecting integer type" );
-	typedef __m128i vec_type;
-	typedef T bitmask_type;
+	using vec_type = __m128i;
+	using bitmask_type = T;
+
 	static const int value_count = 16;
 
 	template <typename V>
@@ -320,8 +325,9 @@ template <typename T> struct mask128_traits<1,T>
 template <typename T> struct mask128_traits<2,T>
 {
 	static_assert( std::is_integral<T>::value, "Expecting integer type" );
-	typedef __m128i vec_type;
-	typedef T bitmask_type;
+	using vec_type = __m128i;
+	using bitmask_type = T;
+
 	static const int value_count = 8;
 
 	template <typename V>
@@ -361,8 +367,9 @@ template <typename T> struct mask128_traits<2,T>
 template <typename T> struct mask128_traits<4,T>
 {
 	static_assert( std::is_integral<T>::value, "Expecting integer type" );
-	typedef __m128i vec_type;
-	typedef T bitmask_type;
+	using vec_type = __m128i;
+	using bitmask_type = T;
+
 	static const int value_count = 4;
 
 	template <typename V>
@@ -400,8 +407,8 @@ template <typename T> struct mask128_traits<4,T>
 
 template <> struct mask128_traits<4,float>
 {
-	typedef __m128 vec_type;
-	typedef uint32_t bitmask_type;
+	using vec_type = __m128;
+	using bitmask_type = uint32_t;
 
 	static const int value_count = 4;
 
@@ -447,8 +454,8 @@ template <> struct mask128_traits<4,float>
 
 template <> struct mask128_traits<8,double>
 {
-	typedef __m128d vec_type;
-	typedef uint64_t bitmask_type;
+	using vec_type = __m128d;
+	using bitmask_type = uint64_t;
 
 	static const int value_count = 2;
 
@@ -491,37 +498,6 @@ template <> struct mask128_traits<8,double>
 #endif
 	}
 };
-
-//#ifndef PAL_ENABLE_SSE2
-//template <> struct mask128_traits<4,float>
-//{
-//	typedef __m128 vec_type;
-//	typedef uint32_t bitmask_type;
-//
-//	static const int value_count = 4;
-//
-//	template <typename V>
-//	static PAL_INLINE vec_type splat( V v )
-//	{
-//		union 
-//		{
-//			float f;
-//			int i;
-//		} val;
-//		val.i = static_cast<int>( v );
-//		return _mm_set1_ps( val.f );
-//	}
-//
-//	static PAL_INLINE vec_type init( bool a0, bool a1, bool a2, bool a3 )
-//	{
-//		return _mm_cmpgt_ps( _mm_set_ps( a3?1.F:0.F,
-//										 a2?1.F:0.F,
-//										 a1?1.F:0.F,
-//										 a0?1.F:0.F ),
-//							 _mm_setzero_ps() );
-//	}
-//};
-//#endif // legacy old no SSE2 support
 
 } // namespace detail
 

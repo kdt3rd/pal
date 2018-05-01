@@ -44,12 +44,11 @@ class mask128
 public:
 	static_assert( sizeof(mtype) <= 8, "Value must be 64-bits or smaller for mask128" );
 
-	typedef mtype value_type;
-	typedef detail::mask128_traits<sizeof(mtype), mtype> value_traits;
-	typedef typename value_traits::vec_type vec_type;
-	typedef typename value_traits::bitmask_type bitmask_type;
-
-	typedef detail::mask128_bitops<value_type> manip_traits;
+	using value_type = mtype;
+	using value_traits = detail::mask128_traits<sizeof(mtype), mtype>;
+	using vec_type = typename value_traits::vec_type;
+	using bitmask_type = typename value_traits::bitmask_type;
+	using manip_traits = detail::mask128_bitops<value_type>;
 
 	static const int value_count = value_traits::value_count;
 

@@ -22,7 +22,7 @@ template <size_t T> struct ivec128_traits {};
 
 template <> struct ivec128_traits<1>
 {
-	typedef char itype;
+	using itype = char;
 	static const int value_count = 16;
 	static PAL_INLINE __m128i splat( itype v ) { return _mm_set1_epi8( v ); }
 	static PAL_INLINE __m128i init( itype a0, itype a1, itype a2, itype a3,
@@ -103,7 +103,7 @@ template <> struct ivec128_traits<1>
 
 template <> struct ivec128_traits<2>
 {
-	typedef short itype;
+	using itype = short;
 	static const int value_count = 8;
 	static PAL_INLINE __m128i splat( itype v ) { return _mm_set1_epi16( v ); }
 	static PAL_INLINE __m128i init( itype a0, itype a1, itype a2, itype a3,
@@ -159,7 +159,7 @@ template <> struct ivec128_traits<2>
 
 template <> struct ivec128_traits<4>
 {
-	typedef int itype;
+	using itype = int;
 	static const int value_count = 4;
 	static PAL_INLINE __m128i splat( itype v ) { return _mm_set1_epi32( v ); }
 	static PAL_INLINE __m128i init( itype a0, itype a1, itype a2, itype a3 )
@@ -222,7 +222,7 @@ template <> struct ivec128_traits<4>
 
 template <> struct ivec128_traits<8>
 {
-	typedef long long itype;
+	using itype = long long;
 	static const int value_count = 2;
 	static PAL_INLINE __m128i splat( itype v ) { return _mm_set1_epi64x( v ); }
 	static PAL_INLINE __m128i init( itype a0, itype a1 )

@@ -61,23 +61,29 @@ template <typename vtype> struct vector_limits {};
 
 }
 
+# if defined(PAL_ENABLE_X86_SIMD)
 // Set up any enabled MMX/SSE/AVX types and functions.
 //
 // for a great reference for the functions, see:
 //
 // https://software.intel.com/sites/landingpage/IntrinsicsGuide
-# include "x86/simd_types.h"
+#  include "x86/simd_types.h"
 // TODO: add "missing" types when SSE features aren't enabled
 // like dvec4 and fvec8 when not on AVX
-# include "x86/simd_constants.h"
-# include "x86/simd_permute.h"
-# include "x86/simd_load_store.h"
-# include "x86/simd_math.h"
-# include "x86/simd_log_exp.h"
-
+#  include "x86/simd_constants.h"
+#  include "x86/simd_permute.h"
+#  include "x86/simd_load_store.h"
+#  include "x86/simd_math.h"
+#  include "x86/simd_log_exp.h"
+# elif defined(PAL_ENABLE_ALTIVEC_SIMD)
+//# include "altivec/simd_types.h"
+# elif defined(PAL_ENABLE_NEON_SIMD)
 //# include "neon/simd_types.h"
+# endif
 
-//# include "noarch/simd_types.h"
+# ifndef PAL_HAS_FVEC4
+# include "noarch/simd_fvec128_t.h"
+# endif
 
 // include the buffer processing implementations
 # include "buffer_process.h"

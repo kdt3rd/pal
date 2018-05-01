@@ -25,19 +25,19 @@ namespace PAL_NAMESPACE
 /// This is the basic implementation of all the integer vector
 /// types. It is only defined in SSE2 and above.  Following this
 /// definition, the various integer types are enumerated as a set of
-/// typedefs for ease in programming.
+/// typedefs/using for ease in programming.
 template <typename inttype>
 class ivec128
 {
-	typedef detail::ivec128_traits<sizeof(inttype)> manip_traits;
-	typedef typename manip_traits::itype intrin_type;
+	using manip_traits = detail::ivec128_traits<sizeof(inttype)>;
+	using intrin_type = typename manip_traits::itype;
 public:
 	static_assert( std::is_integral<inttype>::value, "Expecting integer type" );
 	static_assert( sizeof(inttype) <= 8, "Value must be 64-bits or smaller for ivec128" );
-	
-	typedef inttype value_type;
-	typedef inttype bitmask_type;
-	typedef mask128<value_type> mask_type;
+
+	using value_type = inttype;
+	using bitmask_type = inttype;
+	using mask_type = mask128<value_type>;
 
 	static const int value_count = manip_traits::value_count;
 
@@ -164,19 +164,19 @@ std::ostream &operator<<( std::ostream &os, ivec128<T> v )
 	return os;
 }
 
-typedef ivec128<int8_t> cvec16;
-typedef ivec128<uint8_t> ucvec16;
-typedef ivec128<int16_t> svec8;
-typedef ivec128<uint16_t> usvec8;
-typedef ivec128<int32_t> lvec4;
-typedef ivec128<uint32_t> ulvec4;
-typedef ivec128<int64_t> llvec2;
-typedef ivec128<uint64_t> ullvec2;
+using cvec16 = ivec128<int8_t>;
+using ucvec16 = ivec128<uint8_t>;
+using svec8 = ivec128<int16_t>;
+using usvec8 = ivec128<uint16_t>;
+using lvec4 = ivec128<int32_t>;
+using ulvec4 = ivec128<uint32_t>;
+using llvec2 = ivec128<int64_t>;
+using ullvec2 = ivec128<uint64_t>;
 
 /// @brief declare a specialization of vector_limits for ivec128
 template <typename itype> struct vector_limits< ivec128<itype> > : public std::numeric_limits<itype>
 {
-	typedef itype value_type;
+	using value_type = itype;
 
 	static const int bits = 128;
 	static const int bytes = 16;
