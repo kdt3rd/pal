@@ -186,7 +186,7 @@ PAL_INLINE lvec4::mask_type operator<( lvec4 a, lvec4 b )
 }
 PAL_INLINE lvec4::mask_type operator<=( lvec4 a, lvec4 b )
 {
-	return lvec4::mask_type( _mm_cmpgt_epi32( b, a ) );
+	return lvec4::mask_type( _mm_or_si128( _mm_cmplt_epi32( a, b ), _mm_cmpeq_epi32( a, b ) ) );
 }
 PAL_INLINE lvec4::mask_type operator>( lvec4 a, lvec4 b )
 {
@@ -194,7 +194,7 @@ PAL_INLINE lvec4::mask_type operator>( lvec4 a, lvec4 b )
 }
 PAL_INLINE lvec4::mask_type operator>=( lvec4 a, lvec4 b )
 {
-	return lvec4::mask_type( _mm_cmplt_epi32( b, a ) );
+	return lvec4::mask_type( _mm_or_si128( _mm_cmpgt_epi32( a, b ), _mm_cmpeq_epi32( a, b ) ) );
 }
 
 ////////////////////////////////////////

@@ -8,7 +8,7 @@
 BLDDIR := build
 DEPDIR := $(BLDDIR)/.d
 
-SRCS := test_math.cpp tests/unit_test_fvec4.cpp tests/unit_test_lvec4.cpp
+SRCS := test_math.cpp tests/unit_test_lvec4.cpp tests/unit_test_fvec4.cpp
 
 CFLAGS_ALL := -std=c++17 -Wall
 CFLAGS_sse2 := -msse2

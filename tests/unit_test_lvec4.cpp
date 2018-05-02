@@ -174,43 +174,43 @@ add_op_tests( unit_test &test )
 							 return match( divide_by_const<3>( tmp ), cval );
 						 } );
 	};
-#if 0
+
 	test["bitwise_op_tests"] = [&]() {
 		using namespace PAL_NAMESPACE;
 		TEST_CODE_VAL_EQ(test, "operator&",
 						 []() {
-							 int tval[4] = {5,-1,0.5F,18};
+							 int tval[4] = {5,-1,0,18};
 							 uint32_t mask = 0x01234567;
 							 int cval[4];
 							 lvec4 tmp( tval );
-							 cval[0] = from_int( as_int( tval[0] ) & mask );
-							 cval[1] = from_int( as_int( tval[1] ) & mask );
-							 cval[2] = from_int( as_int( tval[2] ) & mask );
-							 cval[3] = from_int( as_int( tval[3] ) & mask );
+							 cval[0] = tval[0] & mask;
+							 cval[1] = tval[1] & mask;
+							 cval[2] = tval[2] & mask;
+							 cval[3] = tval[3] & mask;
 							 return match( tmp & lvec4( mask ), cval );
 						 } );
 		TEST_CODE_VAL_EQ(test, "operator|",
 						 []() {
-							 int tval[4] = {5,-1,0.5F,18};
+							 int tval[4] = {5,-1,0,18};
 							 uint32_t mask = 0x01234567;
 							 int cval[4];
 							 lvec4 tmp( tval );
-							 cval[0] = from_int( as_int( tval[0] ) | mask );
-							 cval[1] = from_int( as_int( tval[1] ) | mask );
-							 cval[2] = from_int( as_int( tval[2] ) | mask );
-							 cval[3] = from_int( as_int( tval[3] ) | mask );
+							 cval[0] = tval[0] | mask;
+							 cval[1] = tval[1] | mask;
+							 cval[2] = tval[2] | mask;
+							 cval[3] = tval[3] | mask;
 							 return match( tmp | lvec4( mask ), cval );
 						 } );
 		TEST_CODE_VAL_EQ(test, "operator^",
 						 []() {
-							 int tval[4] = {5,-1,0.5F,18};
+							 int tval[4] = {5,-1,0,18};
 							 uint32_t mask = 0x81234567;
 							 int cval[4];
 							 lvec4 tmp( tval );
-							 cval[0] = from_int( as_int( tval[0] ) ^ mask );
-							 cval[1] = from_int( as_int( tval[1] ) ^ mask );
-							 cval[2] = from_int( as_int( tval[2] ) ^ mask );
-							 cval[3] = from_int( as_int( tval[3] ) ^ mask );
+							 cval[0] = tval[0] ^ mask;
+							 cval[1] = tval[1] ^ mask;
+							 cval[2] = tval[2] ^ mask;
+							 cval[3] = tval[3] ^ mask;
 							 return match( tmp ^ lvec4( mask ), cval );
 						 } );
 	};
@@ -218,84 +218,124 @@ add_op_tests( unit_test &test )
 		using namespace PAL_NAMESPACE;
 		TEST_CODE_VAL_EQ(test, "operator==",
 						 []() {
-							 int tval[4] = {5,-1,0.5F,18/0};
-							 int tval2[4] = {5.1F,-1,5.0F,18/0};
+							 int tval[4] = {5,-1,0,18};
+							 int tval2[4] = {6,-2,0,18};
 							 int cval[4];
 							 lvec4 tmp( tval );
 							 lvec4 tmp2( tval2 );
-							 cval[0] = from_int( tval[0] == tval2[0] ? uint32_t(-1) : 0 );
-							 cval[1] = from_int( tval[1] == tval2[1] ? uint32_t(-1) : 0 );
-							 cval[2] = from_int( tval[2] == tval2[2] ? uint32_t(-1) : 0 );
-							 cval[3] = from_int( tval[3] == tval2[3] ? uint32_t(-1) : 0 );
+							 cval[0] = tval[0] == tval2[0] ? uint32_t(-1) : 0;
+							 cval[1] = tval[1] == tval2[1] ? uint32_t(-1) : 0;
+							 cval[2] = tval[2] == tval2[2] ? uint32_t(-1) : 0;
+							 cval[3] = tval[3] == tval2[3] ? uint32_t(-1) : 0;
 							 return match( lvec4( (tmp == tmp2).as_int() ), cval );
 						 } );
 		TEST_CODE_VAL_EQ(test, "operator!=",
 						 []() {
-							 int tval[4] = {5,-1,0.5F,18/0};
-							 int tval2[4] = {5.1F,-1,5.0F,18/0};
+							 int tval[4] = {5,-1,0,18};
+							 int tval2[4] = {6,-2,0,18};
 							 int cval[4];
 							 lvec4 tmp( tval );
 							 lvec4 tmp2( tval2 );
-							 cval[0] = from_int( tval[0] != tval2[0] ? uint32_t(-1) : 0 );
-							 cval[1] = from_int( tval[1] != tval2[1] ? uint32_t(-1) : 0 );
-							 cval[2] = from_int( tval[2] != tval2[2] ? uint32_t(-1) : 0 );
-							 cval[3] = from_int( tval[3] != tval2[3] ? uint32_t(-1) : 0 );
+							 cval[0] = tval[0] != tval2[0] ? uint32_t(-1) : 0;
+							 cval[1] = tval[1] != tval2[1] ? uint32_t(-1) : 0;
+							 cval[2] = tval[2] != tval2[2] ? uint32_t(-1) : 0;
+							 cval[3] = tval[3] != tval2[3] ? uint32_t(-1) : 0;
 							 return match( lvec4( (tmp != tmp2).as_int() ), cval );
 						 } );
 		TEST_CODE_VAL_EQ(test, "operator<",
 						 []() {
-							 int tval[4] = {5,-1,0.5F,18/0};
-							 int tval2[4] = {5.1F,-1,5.0F,18/0};
+							 int tval[4] = {5,-1,0,18};
+							 int tval2[4] = {6,-2,0,18};
 							 int cval[4];
 							 lvec4 tmp( tval );
 							 lvec4 tmp2( tval2 );
-							 cval[0] = from_int( tval[0] < tval2[0] ? uint32_t(-1) : 0 );
-							 cval[1] = from_int( tval[1] < tval2[1] ? uint32_t(-1) : 0 );
-							 cval[2] = from_int( tval[2] < tval2[2] ? uint32_t(-1) : 0 );
-							 cval[3] = from_int( tval[3] < tval2[3] ? uint32_t(-1) : 0 );
+							 cval[0] = tval[0] < tval2[0] ? uint32_t(-1) : 0;
+							 cval[1] = tval[1] < tval2[1] ? uint32_t(-1) : 0;
+							 cval[2] = tval[2] < tval2[2] ? uint32_t(-1) : 0;
+							 cval[3] = tval[3] < tval2[3] ? uint32_t(-1) : 0;
 							 return match( lvec4( (tmp < tmp2).as_int() ), cval );
 						 } );
 		TEST_CODE_VAL_EQ(test, "operator<=",
 						 []() {
-							 int tval[4] = {5,-1,0.5F,18/0};
-							 int tval2[4] = {5.1F,-1,5.0F,18/0};
+							 int tval[4] = {5,-1,0,18};
+							 int tval2[4] = {6,-2,0,18};
 							 int cval[4];
 							 lvec4 tmp( tval );
 							 lvec4 tmp2( tval2 );
-							 cval[0] = from_int( tval[0] <= tval2[0] ? uint32_t(-1) : 0 );
-							 cval[1] = from_int( tval[1] <= tval2[1] ? uint32_t(-1) : 0 );
-							 cval[2] = from_int( tval[2] <= tval2[2] ? uint32_t(-1) : 0 );
-							 cval[3] = from_int( tval[3] <= tval2[3] ? uint32_t(-1) : 0 );
+							 cval[0] = tval[0] <= tval2[0] ? uint32_t(-1) : 0;
+							 cval[1] = tval[1] <= tval2[1] ? uint32_t(-1) : 0;
+							 cval[2] = tval[2] <= tval2[2] ? uint32_t(-1) : 0;
+							 cval[3] = tval[3] <= tval2[3] ? uint32_t(-1) : 0;
 							 return match( lvec4( (tmp <= tmp2).as_int() ), cval );
 						 } );
 		TEST_CODE_VAL_EQ(test, "operator>",
 						 []() {
-							 int tval[4] = {5,-1,0.5F,18/0};
-							 int tval2[4] = {5.1F,-1,5.0F,18/0};
+							 int tval[4] = {5,-1,0,18};
+							 int tval2[4] = {6,-2,0,18};
 							 int cval[4];
 							 lvec4 tmp( tval );
 							 lvec4 tmp2( tval2 );
-							 cval[0] = from_int( tval[0] > tval2[0] ? uint32_t(-1) : 0 );
-							 cval[1] = from_int( tval[1] > tval2[1] ? uint32_t(-1) : 0 );
-							 cval[2] = from_int( tval[2] > tval2[2] ? uint32_t(-1) : 0 );
-							 cval[3] = from_int( tval[3] > tval2[3] ? uint32_t(-1) : 0 );
+							 cval[0] = tval[0] > tval2[0] ? uint32_t(-1) : 0;
+							 cval[1] = tval[1] > tval2[1] ? uint32_t(-1) : 0;
+							 cval[2] = tval[2] > tval2[2] ? uint32_t(-1) : 0;
+							 cval[3] = tval[3] > tval2[3] ? uint32_t(-1) : 0;
 							 return match( lvec4( (tmp > tmp2).as_int() ), cval );
 						 } );
 		TEST_CODE_VAL_EQ(test, "operator>=",
 						 []() {
-							 int tval[4] = {5,-1,0.5F,18/0};
-							 int tval2[4] = {5.1F,-1,5.0F,18/0};
+							 int tval[4] = {5,-1,0,18};
+							 int tval2[4] = {6,-2,0,18};
 							 int cval[4];
 							 lvec4 tmp( tval );
 							 lvec4 tmp2( tval2 );
-							 cval[0] = from_int( tval[0] >= tval2[0] ? uint32_t(-1) : 0 );
-							 cval[1] = from_int( tval[1] >= tval2[1] ? uint32_t(-1) : 0 );
-							 cval[2] = from_int( tval[2] >= tval2[2] ? uint32_t(-1) : 0 );
-							 cval[3] = from_int( tval[3] >= tval2[3] ? uint32_t(-1) : 0 );
+							 cval[0] = tval[0] >= tval2[0] ? uint32_t(-1) : 0;
+							 cval[1] = tval[1] >= tval2[1] ? uint32_t(-1) : 0;
+							 cval[2] = tval[2] >= tval2[2] ? uint32_t(-1) : 0;
+							 cval[3] = tval[3] >= tval2[3] ? uint32_t(-1) : 0;
 							 return match( lvec4( (tmp >= tmp2).as_int() ), cval );
 						 } );
+		TEST_CODE_VAL_EQ(test, "which",
+						 []() {
+							 int tval[4] = {5,-1,0,9};
+							 int tval2[4] = {6,-1,0,9};
+							 lvec4 tmp( tval );
+							 lvec4 tmp2( tval2 );
+							 lvec4::mask_type m = ( tmp < tmp2 );
+
+							 return match_val<int>( m.which(), m.active_mask( 0 ) );
+						 } );
+		TEST_CODE_VAL_EQ(test, "any",
+						 []() {
+							 int tval[4] = {5,-1,0,9};
+							 int tval2[4] = {6,-1,0,9};
+							 lvec4 tmp( tval );
+							 lvec4 tmp2( tval2 );
+							 lvec4::mask_type m = ( tmp < tmp2 );
+
+							 return match_val<bool>( m.any(), true );
+						 } );
+		TEST_CODE_VAL_EQ(test, "all",
+						 []() {
+							 int tval[4] = {5,-1,0,9};
+							 int tval2[4] = {6,-1,0,9};
+							 lvec4 tmp( tval );
+							 lvec4 tmp2( tval2 );
+							 lvec4::mask_type m = ( tmp < tmp2 );
+
+							 return match_val<bool>( m.all(), false );
+						 } );
+		TEST_CODE_VAL_EQ(test, "none",
+						 []() {
+							 int tval[4] = {5,-1,0,9};
+							 int tval2[4] = {6,-1,0,9};
+							 lvec4 tmp( tval );
+							 lvec4 tmp2( tval2 );
+							 lvec4::mask_type m = ( tmp < tmp2 );
+
+							 return match_val<bool>( m.none(), false );
+						 } );
 	};
-#endif
+
 }
 
 static void

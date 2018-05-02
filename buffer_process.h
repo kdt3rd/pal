@@ -32,7 +32,7 @@ namespace PAL_NAMESPACE
 
 template <typename F>
 inline void
-process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
+process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F && func )
 {
 #if defined(PAL_HAS_FVEC8) || defined(PAL_HAS_FVEC4)
 
@@ -64,7 +64,7 @@ process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
 		{
 			while ( nLeft > 0 && nToAlign < kAlignNumber )
 			{
-				*buffer = func( *buffer );
+				*buffer = std::forward<F>( func )( *buffer );
 				++buffer;
 				++nToAlign;
 				--nLeft;
@@ -77,18 +77,18 @@ process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
 			prefetch_readwrite( buffer + 16 );
 
 #if defined(PAL_HAS_FVEC8)
-			store_aligned( buffer, func( load8f_aligned( buffer ) ) );
+			store_aligned( buffer, std::forward<F>( func )( load8f_aligned( buffer ) ) );
 			buffer += 8;
-			store_aligned( buffer, func( load8f_aligned( buffer ) ) );
+			store_aligned( buffer, std::forward<F>( func )( load8f_aligned( buffer ) ) );
 			buffer += 8;
 #elif defined(PAL_HAS_FVEC4)
-			store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+			store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 			buffer += 4;
-			store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+			store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 			buffer += 4;
-			store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+			store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 			buffer += 4;
-			store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+			store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 			buffer += 4;
 #endif
 			nLeft -= 16;
@@ -100,16 +100,16 @@ process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
 			case 13:
 			case 12:
 #if defined(PAL_HAS_FVEC8)
-				store_aligned( buffer, func( load8f_aligned( buffer ) ) );
+				store_aligned( buffer, std::forward<F>( func )( load8f_aligned( buffer ) ) );
 				buffer += 8;
-				store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+				store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 				buffer += 4;
 #elif defined(PAL_HAS_FVEC4)
-				store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+				store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 				buffer += 4;
-				store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+				store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 				buffer += 4;
-				store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+				store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 				buffer += 4;
 #endif
 				nLeft -= 12;
@@ -119,12 +119,12 @@ process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
 			case 9:
 			case 8:
 #if defined(PAL_HAS_FVEC8)
-				store_aligned( buffer, func( load8f_aligned( buffer ) ) );
+				store_aligned( buffer, std::forward<F>( func )( load8f_aligned( buffer ) ) );
 				buffer += 8;
 #elif defined(PAL_HAS_FVEC4)
-				store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+				store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 				buffer += 4;
-				store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+				store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 				buffer += 4;
 #endif
 				nLeft -= 8;
@@ -134,7 +134,7 @@ process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
 			case 5:
 			case 4:
 #if defined(PAL_HAS_FVEC4)
-				store_aligned( buffer, func( load4f_aligned( buffer ) ) );
+				store_aligned( buffer, std::forward<F>( func )( load4f_aligned( buffer ) ) );
 				buffer += 4;
 #endif
 				nLeft -= 4;
@@ -145,15 +145,15 @@ process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
 		switch ( nLeft )
 		{
 			case 3:
-				*buffer = func( *buffer );
+				*buffer = std::forward<F>( func )( *buffer );
 				++buffer;
 				// FALLTHROUGH
 			case 2:
-				*buffer = func( *buffer );
+				*buffer = std::forward<F>( func )( *buffer );
 				++buffer;
 				// FALLTHROUGH
 			case 1:
-				*buffer = func( *buffer );
+				*buffer = std::forward<F>( func )( *buffer );
 				++buffer;
 				// FALLTHROUGH
 			case 0:
@@ -171,7 +171,7 @@ process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
 #if defined(PAL_HAS_FVEC8)
 		while ( nLeft >= 8 )
 		{
-			store( buffer, func( load8f( buffer ) ) );
+			store( buffer, std::forward<F>( func )( load8f( buffer ) ) );
 			buffer += 8;
 			nLeft -= 8;
 		}
@@ -179,7 +179,7 @@ process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
 #if defined(PAL_HAS_FVEC4)
 		while ( nLeft >= 4 )
 		{
-			store( buffer, func( load4f( buffer ) ) );
+			store( buffer, std::forward<F>( func )( load4f( buffer ) ) );
 			buffer += 4;
 			nLeft -= 4;
 		}
@@ -191,7 +191,7 @@ process_inplace( PAL_RESTRICT_PTR(float) buffer, size_t nLeft, F func )
 	// Finish off any remaining scalars
 	while ( nLeft > 0 )
 	{
-		*buffer = func( *buffer );
+		*buffer = std::forward<F>( func )( *buffer );
 		++buffer;
 		--nLeft;
 	}

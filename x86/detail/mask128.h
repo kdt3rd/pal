@@ -70,13 +70,31 @@ template <typename VT> struct mask128_bitops
 #endif
 	}
 
+	static PAL_INLINE int which( vec_type m )
+	{
+		// technically, only tests high bit, but meh
+		return _mm_movemask_epi8( m ) != 0;
+	}
+
+	static PAL_INLINE int active_mask( const int i )
+	{
+		if ( sizeof(value_type) == 1 )
+			return 1 << i;
+		if ( sizeof(value_type) == 2 )
+			return 1 << (i*2);
+		if ( sizeof(value_type) == 4 )
+			return 1 << (i*4);
+		if ( sizeof(value_type) == 8 )
+			return 1 << (i*8);
+		return 0x8000;
+	}
+
 	static PAL_INLINE bool any( vec_type m )
 	{
 #ifdef PAL_ENABLE_SSE4_1
 		return _mm_test_all_zeros( m, m ) == 0;
 #else
-		// technically, only tests high bit, but meh
-		return _mm_movemask_epi8( m ) != 0;
+		return which( m ) != 0;
 #endif
 	}
 
@@ -85,8 +103,7 @@ template <typename VT> struct mask128_bitops
 #ifdef PAL_ENABLE_SSE4_1
 		return _mm_test_all_ones( m ) == 1;
 #else
-		// technically, only tests high bit, but meh
-		return _mm_movemask_epi8( m ) == 0xFFFF;
+		return which( m ) == 0xFFFF;
 #endif
 	}
 
@@ -95,8 +112,7 @@ template <typename VT> struct mask128_bitops
 #ifdef PAL_ENABLE_SSE4_1
 		return _mm_test_all_zeros( m, m ) == 1;
 #else
-		// technically, only tests high bit, but meh
-		return _mm_movemask_epi8( m ) == 0;
+		return which( m ) == 0;
 #endif
 	}
 };
@@ -156,13 +172,23 @@ template <> struct mask128_bitops<double>
 #endif
 	}
 
+	static PAL_INLINE int which( vec_type m )
+	{
+		// technically, only tests high bit, but meh
+		return _mm_movemask_pd( m );
+	}
+
+	static PAL_INLINE int active_mask( const int i )
+	{
+		return 1 << i;
+	}
+
 	static PAL_INLINE bool any( vec_type m )
 	{
 #ifdef PAL_ENABLE_SSE4_1
 		return _mm_test_all_zeros( as_int( m ), as_int( m ) ) == 0;
 #else
-		// technically, only tests high bit, but meh
-		return _mm_movemask_pd( m ) != 0;
+		return which( m ) != 0;
 #endif
 	}
 
@@ -171,8 +197,7 @@ template <> struct mask128_bitops<double>
 #ifdef PAL_ENABLE_SSE4_1
 		return _mm_test_all_ones( as_int( m ) ) == 1;
 #else
-		// technically, only tests high bit, but meh
-		return _mm_movemask_pd( m ) == 0x3;
+		return which( m ) == 0x3;
 #endif
 	}
 
@@ -181,8 +206,7 @@ template <> struct mask128_bitops<double>
 #ifdef PAL_ENABLE_SSE4_1
 		return _mm_test_all_zeros( as_int( m ), as_int( m ) ) == 1;
 #else
-		// technically, only tests high bit, but meh
-		return _mm_movemask_pd( m ) == 0;
+		return which( m ) == 0;
 #endif
 	}
 };
@@ -243,13 +267,23 @@ template <> struct mask128_bitops<float>
 #endif
 	}
 
+	static PAL_INLINE int which( vec_type m )
+	{
+		// technically, only tests high bit, but meh
+		return _mm_movemask_ps( m );
+	}
+
+	static PAL_INLINE int active_mask( const int i )
+	{
+		return 1 << i;
+	}
+
 	static PAL_INLINE bool any( vec_type m )
 	{
 #ifdef PAL_ENABLE_SSE4_1
 		return _mm_test_all_zeros( as_int( m ), as_int( m ) ) == 0;
 #else
-		// technically, only tests high bit, but meh
-		return _mm_movemask_ps( m ) != 0;
+		return which( m ) != 0;
 #endif
 	}
 
@@ -258,8 +292,7 @@ template <> struct mask128_bitops<float>
 #ifdef PAL_ENABLE_SSE4_1
 		return _mm_test_all_ones( as_int( m ) ) == 1;
 #else
-		// technically, only tests high bit, but meh
-		return _mm_movemask_ps( m ) == 0xF;
+		return which( m ) == 0xF;
 #endif
 	}
 
@@ -268,8 +301,7 @@ template <> struct mask128_bitops<float>
 #ifdef PAL_ENABLE_SSE4_1
 		return _mm_test_all_zeros( as_int( m ), as_int( m ) ) == 1;
 #else
-		// technically, only tests high bit, but meh
-		return _mm_movemask_ps( m ) == 0;
+		return which( m ) == 0;
 #endif
 	}
 };

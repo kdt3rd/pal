@@ -161,6 +161,18 @@ public:
 	/// @defgroup test functions
 	/// @{
 
+	/// @brief returns a mask indicating what elements are set @sa active_mask
+	PAL_INLINE int which( void ) const
+	{
+		return manip_traits::any( _vec );
+	}
+
+	/// @brief returns a mask for a specific element index
+	PAL_INLINE int active_mask( const int i ) const
+	{
+		return manip_traits::active_mask( i );
+	}
+
 	/// @brief returns true if any bits are set
 	PAL_INLINE bool any( void ) const
 	{

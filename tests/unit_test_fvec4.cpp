@@ -337,6 +337,37 @@ add_op_tests( unit_test &test )
 							 cval[3] = from_int( tval[3] >= tval2[3] ? uint32_t(-1) : 0 );
 							 return match( fvec4( (tmp >= tmp2).as_float() ), cval );
 						 } );
+		TEST_CODE_VAL_EQ(test, "which",
+						 []() {
+							 float tval[4] = {5.F,-1.F,0.5F,0.F};
+							 float tval2[4] = {5.1F,-1.F,5.0F,0.F};
+							 fvec4 tmp( tval );
+							 fvec4 tmp2( tval2 );
+							 fvec4::mask_type m = ( tmp < tmp2 );
+
+							 return match_val<int>( m.which(), m.active_mask( 0 ) );
+						 } );
+		TEST_CODE_VAL_EQ(test, "any",
+						 []() {
+							 float tval[4] = {5.F,-1.F,0.5F,18.F/0.F};
+							 fvec4 tmp( tval );
+							 auto m = isinf( tmp );
+							 return match_val<bool>( m.any(), true );
+						 } );
+		TEST_CODE_VAL_EQ(test, "all",
+						 []() {
+							 float tval[4] = {5.F,-1.F,0.5F,18.F/0.F};
+							 fvec4 tmp( tval );
+							 auto m = isinf( tmp );
+							 return match_val<bool>( m.all(), false );
+						 } );
+		TEST_CODE_VAL_EQ(test, "none",
+						 []() {
+							 float tval[4] = {5.F,-1.F,0.5F,0.F};
+							 fvec4 tmp( tval );
+							 auto m = isinf( tmp );
+							 return match_val<bool>( m.none(), true );
+						 } );
 	};
 }
 

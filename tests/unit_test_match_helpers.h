@@ -134,6 +134,23 @@ std::ostream &operator<<( std::ostream &os, const std::array<T, N> &v )
 
 ////////////////////////////////////////
 
+template <typename T>
+struct match_val
+{
+	using value_type = T;
+	match_val( value_type c, value_type e ) : _v( c ), _s( e ) {}
+
+	bool exact_equal( void ) const { return _v == _s; }
+
+	const value_type &expect( void ) const { return _s; }
+	const value_type &calc( void ) const { return _v; }
+	value_type delta( void ) const { return _v - _s; }
+
+	value_type _v;
+	value_type _s;
+};
+////////////////////////////////////////
+
 template <typename V>
 struct match_test
 {
@@ -314,6 +331,32 @@ TEST_VAL_EQ_HEX( unit_test &test, const std::string &tag, T val, U exp )
 
 // expects code to be a lambda or other operator/functor
 // that returns a match object
+template <typename F, typename T>
+static void
+TEST_CODE_EQUAL( unit_test &test, const std::string &tag, F code, T val )
+{
+	auto t = code();
+
+	if ( t == val )
+	{
+		std::stringstream msg_buf;
+		msg_buf << "<matches>";
+		test.success( tag, msg_buf.str() );
+	}
+	else
+	{
+		std::stringstream msg_buf;
+		msg_buf << "expect "
+				<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)
+				<< val << ", got "
+				<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)
+				<< t;
+		test.failure( tag, msg_buf.str() );
+	}
+}
+
+// expects code to be a lambda or other operator/functor
+// that returns a match object
 template <typename F>
 static void
 TEST_CODE_VAL_EQ( unit_test &test, const std::string &tag, F code )
@@ -330,6 +373,7 @@ TEST_CODE_VAL_EQ( unit_test &test, const std::string &tag, F code )
 	{
 		std::stringstream msg_buf;
 		msg_buf << "expect "
+				<< std::boolalpha
 				<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)
 				<< t.expect() << ", got "
 				<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)
