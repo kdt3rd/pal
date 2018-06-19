@@ -1167,6 +1167,7 @@ add_exp_tests( unit_test &test )
 					cval[i] = ::powf( v[i], p[i] );
 				return match( fast_powf( tmpV, tmpP ), cval );
 			}, 64 );
+#if 0
 		TEST_CODE_LONG_RUN(
 			test, "powf_range",
 			[&test]() {
@@ -1220,6 +1221,7 @@ add_exp_tests( unit_test &test )
 					test.failure( "powf_range", msg.str() );
 				}
 			} );
+#endif
 		TEST_CODE_VAL_EQ_ULPS(
 			test, "cbrtf",
 			[]() {
@@ -1238,18 +1240,38 @@ static void
 add_trig_tests( unit_test &test )
 {
 	using namespace PAL_NAMESPACE;
-//	test["trig"] = [&]() {
-//		TEST_CODE_VAL_EQ(
-//			test, "sinf",
-//			[]() {
-//				float v[4] = { 0.25F,-2.F,float(M_PI*2), 0.F };
-//				fvec4 tmp( v );
-//				float cval[4];
-//				for ( int i = 0; i != 4; ++i )
-//					cval[i] = std::sinf( v[i] );
-//				return match( sinf( tmp ), cval );
-//			} );
-//	}
+	test["trig"] = [&]() {
+		TEST_CODE_VAL_EQ_PREC(
+			test, "sinf",
+			[]() {
+				float v[4] = { 0.25F,-2.F,float(M_PI*2), 0.F };
+				fvec4 tmp( v );
+				float cval[4];
+				for ( int i = 0; i != 4; ++i )
+					cval[i] = std::sin( v[i] );
+				return match( sinf( tmp ), cval );
+			} );
+		TEST_CODE_VAL_EQ_PREC(
+			test, "sinf_2",
+			[]() {
+				float v[4] = { -float(M_PI*17.0),float(M_PI*2) - 0.1F, 0.001F, float(-3.0*M_PI/2.0) };
+				fvec4 tmp( v );
+				float cval[4];
+				for ( int i = 0; i != 4; ++i )
+					cval[i] = std::sin( v[i] );
+				return match( sinf( tmp ), cval );
+			} );
+		TEST_CODE_VAL_EQ_PREC(
+			test, "cosf",
+			[]() {
+				float v[4] = { 0.25F,-2.F,float(M_PI*2), 0.F };
+				fvec4 tmp( v );
+				float cval[4];
+				for ( int i = 0; i != 4; ++i )
+					cval[i] = std::cos( v[i] );
+				return match( cosf( tmp ), cval );
+			} );
+	};
 }
 
 int main( int argc, char *argv[] )

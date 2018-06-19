@@ -75,6 +75,7 @@ template <typename vtype> struct vector_limits {};
 #  include "x86/simd_load_store.h"
 #  include "x86/simd_math.h"
 #  include "x86/simd_log_exp.h"
+#  include "x86/simd_trig.h"
 # elif defined(PAL_ENABLE_ALTIVEC_SIMD)
 //# include "altivec/simd_types.h"
 # elif defined(PAL_ENABLE_NEON_SIMD)
