@@ -153,6 +153,20 @@ fmodf( vec n, vec d )
 	return nmadd( t, d, n );
 }
 
+template <typename vec>
+PAL_INLINE PAL_ENABLE_ANY_FLOAT(vec)
+lerp( vec a, vec b, vec t )
+{
+	// a * (1 - t) + b * t
+	// b * t + ( a - a * t )
+	// which is only 2 instructions on fma hardware (4 on older hw),
+	// and uses no temporaries
+	// with no loss of precision compared to
+	// other common "fast" lerp
+	// a + t * ( b - a )
+	return fma( b, t, nmadd( a, t, a ) );
+}
+
 } // namespace pal
 
 #endif // _PAL_X86_SIMD_MATH_H_
