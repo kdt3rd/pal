@@ -84,7 +84,7 @@ public:
 	PAL_INLINE operator __m256( void ) const { return _vec; }
 	PAL_INLINE int_vec_type as_int( void ) const { return int_vec_type( _mm256_castps_si256( _vec ) ); }
 
-	PAL_INLINE fvec8 &operator=( float v ) { _vec = _mm256_set1_ps( v ); }
+	PAL_INLINE fvec8 &operator=( float v ) { _vec = _mm256_set1_ps( v ); return *this; }
 
 	PAL_INLINE float operator[]( int i ) const
 	{
