@@ -83,6 +83,62 @@ PAL_INLINE float hsum( fvec4 v )
 #endif
 }
 
+/// @brief computes a dot product of two values
+PAL_INLINE float dot( fvec4 x, fvec4 y )
+{
+#ifdef PAL_ENABLE_SSE4_1
+	return _mm_cvtss_f32( _mm_dp_ps( x, y, 0xff ) );
+#else
+	return hsum( x * y );
+#endif
+}
+
+/// @brief computes a dot product of two values, only using
+/// 3 values (x[0], x[1], x[2]) 
+PAL_INLINE float dot3( fvec4 x, fvec4 y )
+{
+#ifdef PAL_ENABLE_SSE4_1
+	return _mm_cvtss_f32( _mm_dp_ps( x, y, 0x77 ) );
+#else
+	fvec4 mv = x * y;
+	mv.set<3>( 0.f );
+	return hsum( mv );
+#endif
+}
+
+/// @brief computes the prefix sum of a single value
+/// so v[0] = v[0]
+/// so v[1] = v[0] + v[1]
+/// so v[2] = v[0] + v[1] + v[2]
+/// so v[3] = v[0] + v[1] + v[2] + v[3]
+PAL_INLINE fvec4 prefix_sum( fvec4 v )
+{
+#ifdef PAL_ENABLE_SSE3
+	// a = (v[0] + v[1], v[2] + v[3], v[0] + v[1], v[2] + v[3])
+	__m128 a = _mm_hadd_ps( v, v );
+	// b = (v[0] + v[1] + v[2] + v[3], v[2] + v[3], v[0] + v[1], v[2] + v[3])
+	__m128 b = _mm_hadd_ps( a, _mm_setzero_ps() );
+	// c = (v[0] + v[1] + v[0], v[2] + v[3] + v[1], v[0] + v[1] + v[2], v[2] + v[3] + v[3])
+	__m128 c = _mm_add_ps( a, v );
+# ifdef PAL_ENABLE_SSE4_1
+	// x = ( v[0], v[0] + v[1], v[0] + v[1], v[2] + v[3] )
+	__m128 x = _mm_insert_ps( v, a, (1 << 4) );
+	// x = ( v[0], v[0] + v[1], v[0] + v[1], v[0] + v[1], v[2] + v[3] )
+	x = _mm_insert_ps( x, c, (2 << 6) | (2 << 4) );
+	return _mm_insert_ps( x, b, (3 << 4) );
+# else
+	return fvec4( v.get<0>(), fvec4(a).get<0>(), fvec4(c).get<2>(), fvec4(b).get<0>() );
+# endif
+#else
+	float b = v.get<0>() + v.get<1>();
+	v.set<1>( b );
+	float c = b + v.get<2>();
+	v.set<2>( c );
+	v.set<3>( c + v.get<3>() );
+	return v;
+#endif
+}
+
 /// @brief return a fast (estimate) reciprocal (1 / v) of each value
 ///
 /// has error less than 1.5*2^-12. so up to 4096 ULP
@@ -193,6 +249,12 @@ PAL_INLINE lvec4 fpclassify( fvec4 v )
 			 ( isinf & lvec4::splat( FP_INFINITE ) ) |
 			 ( isnan & lvec4::splat( FP_NAN ) ) |
 			 isnorm );
+}
+
+/// @brief clear any inf or NaN values to 0
+PAL_INLINE fvec4 clearinfnan( fvec4 v )
+{
+	return _mm_and_ps( v, _mm_cmpord_ps( v, _mm_mul_ps( _mm_setzero_ps(), v ) ) );
 }
 
 /// @brief implement signbit for float values

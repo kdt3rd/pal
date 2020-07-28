@@ -556,6 +556,32 @@ add_math_tests( unit_test &test )
 							 return match( nmsub( fvec4(tval), fvec4(tval2), fvec4(tval3) ), cval );
 						 } );
 
+		TEST_CODE_VAL_EQ(test, "dot",
+						 []() {
+							 float tval[4] = {1.F,2.F,3.F,4.F};
+							 float tval2[4] = {4.F,3.F,2.F,1.F};
+							 float dp = dot( fvec4(tval), fvec4(tval2) );
+							 float cval[4];
+							 cval[0] = 0.F;
+							 for ( int i = 0; i != 4; ++i )
+								 cval[0] += tval[i] * tval2[i];
+							 for ( int i = 1; i != 4; ++i )
+								 cval[i] = cval[0];
+							 return match( fvec4::splat( dp ), cval );
+						 } );
+		TEST_CODE_VAL_EQ(test, "dot3",
+						 []() {
+							 float tval[4] = {1.F,2.F,3.F,4.F};
+							 float tval2[4] = {4.F,3.F,2.F,1.F};
+							 float dp = dot3( fvec4(tval), fvec4(tval2) );
+							 float cval[4];
+							 cval[0] = 0.F;
+							 for ( int i = 0; i != 3; ++i )
+								 cval[0] += tval[i] * tval2[i];
+							 for ( int i = 1; i != 4; ++i )
+								 cval[i] = cval[0];
+							 return match( fvec4::splat( dp ), cval );
+						 } );
 		TEST_CODE_VAL_EQ(test, "hsum",
 						 []() {
 							 float tval[4] = {5.F,-1.F,0.5F,18.F};
@@ -565,6 +591,15 @@ add_math_tests( unit_test &test )
 								 cval[i] = cval[0];
 							 float hs = hsum( fvec4(tval) );
 							 return match( fvec4(hs), cval );
+						 } );
+
+		TEST_CODE_VAL_EQ(test, "pfxsum",
+						 []() {
+							 float tval[4] = {1.F,1.F,1.F,1.F};
+							 float cval[4] = {1.F,2.F,3.F,4.F};
+							 fvec4 tmp = load4f( tval );
+							 fvec4 psm = prefix_sum( tmp );
+							 return match( psm, cval );
 						 } );
 
 		TEST_CODE_VAL_EQ_ULPS(test, "faster_recip",
@@ -640,6 +675,14 @@ add_math_tests( unit_test &test )
 							 for ( int i = 0; i != 4; ++i )
 								 cval[i] = std::fpclassify( tval[i] );
 							 return intmatch( fpclassify( tmp ), cval );
+						 } );
+		TEST_CODE_VAL_EQ(test, "clearinfnan",
+						 []() {
+							 // TODO: add test for subnormal
+							 float tval[4] = {std::numeric_limits<float>::quiet_NaN(),0.F,0.5F,18.F/0.F};
+							 float cval[4] = {0.F,0.F,0.5F,0.F};
+							 fvec4 tmp = clearinfnan( fvec4( tval ) );
+							 return match( tmp, cval );
 						 } );
 		TEST_CODE_VAL_EQ(test, "signbit",
 						 []() {
@@ -1283,7 +1326,7 @@ int main( int argc, char *argv[] )
 	add_load_store_tests( test );
 	add_math_tests( test );
 	add_exp_tests( test );
-	add_trig_tests( test );
+	//add_trig_tests( test );
 
 	bool q = false;
 	while ( argc > 1 )

@@ -95,8 +95,39 @@ template <> struct ivec128_traits<1>
 		return vals[idx];
 #else
 		PAL_ALIGN_128 itype vals[value_count];
-		_mm_store_ps( reinterpret_cast<__m128i *>( vals ), a );
+		_mm_store_si128( reinterpret_cast<__m128i *>( vals ), a );
 		return vals[idx];
+#endif
+	}
+
+	template <int i>
+	static PAL_INLINE __m128i insert( __m128i vv, itype v )
+	{
+		static_assert( i >= 0 && i < 16, "invalid index" );
+#ifdef PAL_ENABLE_SSE4_1
+		return _mm_insert_epi8( vv, v, i );
+#elif defined(PAL_HAS_DIRECT_VEC_ACCESS)
+		return _mm_set_epi8( (i == 15 ) ? v : ((__v16qi)vv)[15],
+							 (i == 14 ) ? v : ((__v16qi)vv)[14],
+							 (i == 13 ) ? v : ((__v16qi)vv)[13],
+							 (i == 12 ) ? v : ((__v16qi)vv)[12],
+							 (i == 11 ) ? v : ((__v16qi)vv)[11],
+							 (i == 10 ) ? v : ((__v16qi)vv)[10],
+							 (i == 9 ) ? v : ((__v16qi)vv)[9],
+							 (i == 8 ) ? v : ((__v16qi)vv)[8],
+							 (i == 7 ) ? v : ((__v16qi)vv)[7],
+							 (i == 6 ) ? v : ((__v16qi)vv)[6],
+							 (i == 5 ) ? v : ((__v16qi)vv)[5],
+							 (i == 4 ) ? v : ((__v16qi)vv)[4],
+							 (i == 3 ) ? v : ((__v16qi)vv)[3],
+							 (i == 2 ) ? v : ((__v16qi)vv)[2],
+							 (i == 1 ) ? v : ((__v16qi)vv)[1],
+							 (i == 0 ) ? v : ((__v16qi)vv)[0] );
+#else
+		PAL_ALIGN_128 itype vals[value_count];
+		_mm_store_si128( reinterpret_cast<__m128i *>( vals ), vv );
+		vals[i] = v;
+		return _mm_load_si128( vals );
 #endif
 	}
 };
@@ -153,6 +184,29 @@ template <> struct ivec128_traits<2>
 		PAL_ALIGN_128 itype vals[value_count];
 		_mm_store_ps( reinterpret_cast<__m128i *>( vals ), a );
 		return vals[idx];
+#endif
+	}
+
+	template <int i>
+	static PAL_INLINE __m128i insert( __m128i vv, itype v )
+	{
+		static_assert( i >= 0 && i < 8, "invalid index" );
+#ifdef PAL_ENABLE_SSE4_1
+		return _mm_insert_epi16( vv, v, i );
+#elif defined(PAL_HAS_DIRECT_VEC_ACCESS)
+		return _mm_set_epi16( (i == 7 ) ? v : ((__v8hi)vv)[7],
+							  (i == 6 ) ? v : ((__v8hi)vv)[6],
+							  (i == 5 ) ? v : ((__v8hi)vv)[5],
+							  (i == 4 ) ? v : ((__v8hi)vv)[4],
+							  (i == 3 ) ? v : ((__v8hi)vv)[3],
+							  (i == 2 ) ? v : ((__v8hi)vv)[2],
+							  (i == 1 ) ? v : ((__v8hi)vv)[1],
+							  (i == 0 ) ? v : ((__v8hi)vv)[0] );
+#else
+		PAL_ALIGN_128 itype vals[value_count];
+		_mm_store_si128( reinterpret_cast<__m128i *>( vals ), vv );
+		vals[i] = v;
+		return _mm_load_si128( vals );
 #endif
 	}
 };
@@ -218,6 +272,25 @@ template <> struct ivec128_traits<4>
 		return vals[idx];
 #endif
 	}
+
+	template <int i>
+	static PAL_INLINE __m128i insert( __m128i vv, itype v )
+	{
+		static_assert( i >= 0 && i < 4, "invalid index" );
+#ifdef PAL_ENABLE_SSE4_1
+		return _mm_insert_epi32( vv, v, i );
+#elif defined(PAL_HAS_DIRECT_VEC_ACCESS)
+		return _mm_set_epi32( (i == 3 ) ? v : ((__v4si)vv)[3],
+							  (i == 2 ) ? v : ((__v4si)vv)[2],
+							  (i == 1 ) ? v : ((__v4si)vv)[1],
+							  (i == 0 ) ? v : ((__v4si)vv)[0] );
+#else
+		PAL_ALIGN_128 itype vals[value_count];
+		_mm_store_si128( reinterpret_cast<__m128i *>( vals ), vv );
+		vals[i] = v;
+		return _mm_load_si128( vals );
+#endif
+	}
 };
 
 template <> struct ivec128_traits<8>
@@ -271,6 +344,23 @@ template <> struct ivec128_traits<8>
 		PAL_ALIGN_128 itype vals[value_count];
 		_mm_store_ps( reinterpret_cast<__m128i *>( vals ), a );
 		return vals[idx];
+#endif
+	}
+
+	template <int i>
+	static PAL_INLINE __m128i insert( __m128i vv, itype v )
+	{
+		static_assert( i >= 0 && i < 2, "invalid index" );
+#ifdef PAL_ENABLE_SSE4_1
+		return _mm_insert_epi64( vv, v, i );
+#elif defined(PAL_HAS_DIRECT_VEC_ACCESS)
+		return _mm_set_epi64x( (i == 1 ) ? v : ((__v2di)vv)[1],
+							   (i == 0 ) ? v : ((__v2di)vv)[0] );
+#else
+		PAL_ALIGN_128 itype vals[value_count];
+		_mm_store_si128( reinterpret_cast<__m128i *>( vals ), vv );
+		vals[i] = v;
+		return _mm_load_si128( vals );
 #endif
 	}
 };

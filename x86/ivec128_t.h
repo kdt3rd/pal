@@ -72,7 +72,10 @@ public:
 
 	template <size_t N>
 	explicit PAL_INLINE ivec128( const std::array<value_type, N> &a ) : _vec( manip_traits::init( a ) ) {}
-														  
+
+	template <typename O>
+	PAL_INLINE ivec128( const ivec128<O> &o ) : _vec( static_cast<__m128i>( o ) ) {}
+
 	template <typename I>
 	PAL_INLINE ivec128 &operator=( I x )
 	{
@@ -88,6 +91,62 @@ public:
 	/// @brief ability to reinterpret this as a float 128 vec
 	PAL_INLINE __m128 as_float( void ) const { return _mm_castsi128_ps( _vec ); }
 	PAL_INLINE __m128d as_double( void ) const { return _mm_castsi128_pd( _vec ); }
+
+	PAL_INLINE void set( value_type v ) { _vec = splat( v ); }
+	PAL_INLINE void set( __m128i v ) { _vec = v; }
+	PAL_INLINE void set( ivec128 v ) { _vec = v._vec; }
+
+	template <int i>
+	void set( value_type v )
+	{
+		_vec = manip_traits::insert<i>( _vec, v );
+	}
+
+	template <int i>
+	value_type get( value_type v )
+	{
+		_vec = manip_traits::access( _vec, i );
+	}
+
+	class setter
+	{
+	public:
+		~setter() = default;
+		setter( const setter & ) = delete;
+		setter &operator=( const setter & ) = delete;
+		setter( setter && ) = default;
+		setter &operator=( setter && ) = default;
+		PAL_INLINE setter &operator=( value_type v )
+		{
+			set( v );
+			return *this;
+		}
+		PAL_INLINE operator value_type () const { return get(); }
+		PAL_INLINE setter &operator+=( value_type v ) { set( get() + v ); return *this; }
+		PAL_INLINE setter &operator-=( value_type v ) { set( get() - v ); return *this; }
+		PAL_INLINE setter &operator*=( value_type v ) { set( get() * v ); return *this; }
+		PAL_INLINE setter &operator/=( value_type v ) { set( get() / v ); return *this; }
+	private:
+
+		PAL_INLINE value_type get( void ) const { return (*_vec)[_i]; }
+		PAL_INLINE void set( value_type v )
+		{
+			if ( _i == 0 )
+				(*_vec).set<0>( v );
+			else if ( _i == 1 )
+				(*_vec).set<1>( v );
+			else if ( _i == 2 )
+				(*_vec).set<2>( v );
+			else if ( _i == 3 )
+				(*_vec).set<3>( v );
+		}
+		PAL_INLINE setter( ivec128 *v, int i ) : _vec( v ), _i( i ) {}
+		ivec128 *_vec;
+		int _i;
+		friend class ivec128;
+	};
+
+	PAL_INLINE setter at( int i ) { return setter( this, i ); }
 
 	PAL_INLINE value_type operator[]( int i ) const
 	{
